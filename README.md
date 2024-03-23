@@ -6,4 +6,12 @@ One can find the course website [here](https://sp18.datastructur.es/).
 
 The folder structure is required to be the same as the original one, so that the [autograder](https://www.gradescope.com/courses/20666) can work properly. The autograder [gradescope.com](https://www.gradescope.com/) is used to grade the projects of the course, and one is allowed to join the public version of **sp18** course using the entry code `MNXYKX`.
 
+There is another branch "materials" where one can find all the materials about CS61B-sp18 course (including the lecture slides, lecture codes, discussions and exams). You can switch to the branch by running the following command in your terminal if you have cloned this repository to your local machine:
+
+```bash
+git checkout materials
+```
+
+or just check the branch online in github.
+
 If you are a student of this course, please use this repository as a reference only. Do not copy the code directly, as it is against the course policy.
