@@ -48,3 +48,6 @@ $RECYCLE.BIN/
 *.msm
 *.msp
 *.lnk
+
+!*.md
+!LICENSE
