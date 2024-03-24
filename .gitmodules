@@ -1,0 +1,3 @@
+[submodule "lectureCode-sp18"]
+	path = lectureCode-sp18
+	url = git@github.com:Berkeley-CS61B/lectureCode-sp18.git
