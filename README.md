@@ -12,6 +12,6 @@ There is another branch "materials" where one can find all the materials about C
 git checkout materials
 ```
 
-or just check the branch online in github.
+or just check the [branch](https://github.com/cy-Yin/UCBerkeley-CS61B-sp18/tree/materials) online in github.
 
 If you are a student of this course, please use this repository as a reference only. Do not copy the code directly, as it is against the course policy.
