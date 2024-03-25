@@ -51,3 +51,5 @@ $RECYCLE.BIN/
 
 !*.md
 !LICENSE
+.idea
+out
