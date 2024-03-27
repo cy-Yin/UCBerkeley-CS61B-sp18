@@ -99,7 +99,7 @@ public class IntList {
      */
     public static IntList catenate(IntList A, IntList B) {
         if (A == null) {
-            return null;
+            return B;
         }
         // Make a fresh copy of A to combineTwo list.
         IntList conbineTwo = new IntList(A.first, null);
