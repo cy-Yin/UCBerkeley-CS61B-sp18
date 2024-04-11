@@ -57,7 +57,7 @@ public class Room {
     public Position innerPosRandom(MapGenerationParameters mgp) {
         Random random = new Random(mgp.seed);
         int innerX = pos.x + 1 + RandomUtils.uniform(random, width - 2);  // from 1 to width - 2
-        int innerY = pos.y + 1 + RandomUtils.uniform(random,height - 2); // from 1 to height - 2
+        int innerY = pos.y + 1 + RandomUtils.uniform(random, height - 2); // from 1 to height - 2
         return new Position(innerX, innerY);
     }
 }
