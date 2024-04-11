@@ -1,11 +1,11 @@
 package byog.Core;
 
 import byog.TileEngine.TETile;
+
 import org.junit.Test;
+import static org.junit.Assert.*;
 
 import java.util.Random;
-
-import static org.junit.Assert.*;
 
 public class TestSeed1234 {
 
@@ -30,10 +30,10 @@ public class TestSeed1234 {
 
     /** Tests the build-in method random.nextInt(a, b). */
     @Test
-    public void testRandomNextInt() {
+    public void testRandomUniform() {
         Random random = new Random();
         for (int i = 0; i < MAX_TEST_NUM; i += 1) {
-            int randInt = random.nextInt(0, 2);
+            int randInt = RandomUtils.uniform(random, 0, 2);
             assertTrue(randInt == 0 || randInt == 1);
         }
     }

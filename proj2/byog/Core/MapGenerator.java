@@ -53,10 +53,10 @@ public class MapGenerator {
 
         ArrayList<Room> rooms = new ArrayList<>();
         for (int i = 0; i < MAX_NUM_ROOM; i += 1) {
-            int roomWidth = random.nextInt(MIN_ROOM_WIDTH, MAX_ROOM_WIDTH);
-            int roomHeight = random.nextInt(MIN_ROOM_HEIGHT, MAX_ROOM_HEIGHT);
-            int randPosX = random.nextInt(mgp.width);
-            int randPosY = random.nextInt(mgp.height);
+            int roomWidth = RandomUtils.uniform(random, MIN_ROOM_WIDTH, MAX_ROOM_WIDTH);
+            int roomHeight = RandomUtils.uniform(random, MIN_ROOM_HEIGHT, MAX_ROOM_HEIGHT);
+            int randPosX = RandomUtils.uniform(random, mgp.width);
+            int randPosY = RandomUtils.uniform(random, mgp.height);
             Position roomPos = new Position(randPosX, randPosY);
 
             Room newRoom = new Room(roomWidth, roomHeight, roomPos);
@@ -138,7 +138,7 @@ public class MapGenerator {
                 Hallway.generateHorizontalHallway(world, room0InnerPosRand, room1InnerPosRand);
             } else {
                 Random random = new Random(mgp.seed);
-                int decideUpperConvex = random.nextInt(0, 2);
+                int decideUpperConvex = RandomUtils.uniform(random, 0, 2);
                 if (decideUpperConvex == 0) {
                     Hallway.generateLHallway(world, room0InnerPosRand, room1InnerPosRand, false);
                 } else { // decideUpperConvex == 1
