@@ -28,11 +28,56 @@ public class Game {
      * @return the 2D TETile[][] representing the state of the world
      */
     public TETile[][] playWithInputString(String input) {
-        // TODO: Fill out this method to run the game using the input passed in,
+        // Hint: Fill out this method to run the game using the input passed in,
         // and return a 2D tile representation of the world that would have been
         // drawn if the same inputs had been given to playWithKeyboard().
 
-        TETile[][] finalWorldFrame = null;
-        return finalWorldFrame;
+        TETile[][] finalWorld = new TETile[WIDTH][HEIGHT];
+
+        input = input.toLowerCase();
+        char firstOperation = input.charAt(0); // 'n' for new or 'l' for load or 's' for save.
+        if (firstOperation == 'n') {
+            finalWorld = newGame(input);
+        } else if (firstOperation == 'l') {
+            finalWorld = loadGame(input);
+        } else if (firstOperation == 'q') {
+            System.exit(0);
+        } else {
+            finalWorld = newGame(input);
+        }
+
+        return finalWorld;
+    }
+
+    /** Creates a new game when char n which means demanding for a new game is given.
+     * Called if playing with input string.
+     */
+    private static TETile[][] newGame(String input) {
+        long seed = getSeed(input);
+
+        MapGenerationParameters mgp = new MapGenerationParameters(WIDTH, HEIGHT, seed);
+        TETile[][] world = MapGenerator.generateMap(mgp);
+        return world;
+    }
+
+    /** Loads the former game when char l which means load is given.
+     * Called if playing with input string.
+     */
+    private static TETile[][] loadGame(String input) {
+        return null;
+    }
+
+    /** Returns the long type seed from the input string.
+     *  Called if playing with input string.
+     *  @param input the input string
+     */
+    private static long getSeed(String input) {
+        /* input string have a format of "N#####S"
+         * where "######" are digits for example "1234"
+         * we need to convert to digits-string to a long type seed.
+         */
+        int indexS = input.indexOf('s');
+        long seed = Long.parseLong(input.substring(1, indexS)); // seed string start from 2 to n-1
+        return seed;
     }
 }
