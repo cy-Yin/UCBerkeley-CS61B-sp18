@@ -16,6 +16,39 @@ public class TestSeed1234 {
         System.out.println(TETile.toString(world));
     }
 
+    @Test
+    public void testPlayWithInputString() {
+        TETile[][] world1 = new Game().playWithInputString("N1234SDDDWWWDDD");
+
+        TETile[][] world2_1 = new Game().playWithInputString("N1234SDDD:Q");
+        TETile[][] world2 = new Game().playWithInputString("LWWWDDD");
+
+        TETile[][] world3_1 = new Game().playWithInputString("N1234SDDD:Q");
+        TETile[][] world3_2 = new Game().playWithInputString("LWWW:Q");
+        TETile[][] world3 = new Game().playWithInputString("LDDD:Q");
+
+        TETile[][] world4_1 = new Game().playWithInputString("N1234SDDD:Q");
+        TETile[][] world4_2 = new Game().playWithInputString("L:Q");
+        TETile[][] world4_3 = new Game().playWithInputString("L:Q");
+        TETile[][] world4 = new Game().playWithInputString("LWWWDDD");
+
+        TETile[][] world5_1 = new Game().playWithInputString("N1234SAASSSSSS:Q");
+        TETile[][] world5_2 = new Game().playWithInputString("L:Q");
+        TETile[][] world5_3 = new Game().playWithInputString("L:Q");
+        TETile[][] world5 = new Game().playWithInputString("LAASSSWASD");
+
+        TETile[][] world6_1 = new Game().playWithInputString("N999SDD:Q");
+        TETile[][] world6_2 = new Game().playWithInputString("L:Q");
+        TETile[][] world6_3 = new Game().playWithInputString("L:Q");
+        TETile[][] world6 = new Game().playWithInputString("LWWWDDD");
+
+        assertEquals(TETile.toString(world1), TETile.toString(world2));
+        assertEquals(TETile.toString(world1), TETile.toString(world3));
+        assertEquals(TETile.toString(world1), TETile.toString(world4));
+        assertNotEquals(TETile.toString(world1), TETile.toString(world5));
+        assertNotEquals(TETile.toString(world1), TETile.toString(world6));
+    }
+
     /** Tests the build-in method toLowerCase() */
     @Test
     public void testLowercase() {
@@ -36,5 +69,13 @@ public class TestSeed1234 {
             int randInt = RandomUtils.uniform(random, 0, 2);
             assertTrue(randInt == 0 || randInt == 1);
         }
+    }
+
+    /** Tests the build-in method string.substring(index). */
+    @Test
+    public void testSubstring() {
+        String input = "N1234SWDASWAS";
+        int indexS = input.indexOf('S');
+        assertEquals("WDASWAS", input.substring(indexS + 1));
     }
 }

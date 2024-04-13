@@ -1,6 +1,9 @@
 package byog.Core;
 
-public class MapGenerationParameters {
+import java.io.Serializable;
+
+public class MapGenerationParameters implements Serializable {
+    private static final long serialVersionUID = 123123123123123L;
     int width;
     int height;
     long seed;

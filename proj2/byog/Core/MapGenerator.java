@@ -148,4 +148,76 @@ public class MapGenerator {
             newRooms.remove(0);
         }
     }
+
+    /** Returns the player after generate one.
+     *  The player should be generated at the floor, rather than walls, nothing or something else.
+     */
+    public static Player generatePlayer(TETile[][] world, MapGenerationParameters mgp) {
+        Random rand = new Random(mgp.seed);
+        int playerPosX = RandomUtils.uniform(rand, 0, Game.WIDTH);
+        int playerPosY = RandomUtils.uniform(rand, 0, Game.HEIGHT);
+        while (world[playerPosX][playerPosY] != Tileset.FLOOR) {
+            playerPosX = RandomUtils.uniform(rand, 0, Game.WIDTH);
+            playerPosY = RandomUtils.uniform(rand, 0, Game.HEIGHT);
+        }
+        Position playerPos = new Position(playerPosX, playerPosY);
+        world[playerPos.x][playerPos.y] = Tileset.PLAYER;
+        return new Player(playerPos);
+    }
+
+    /** Returns the locked door after generate one.
+     *  The door's position is originally wall, and it has four neighbor tiles,
+     *  with one floor and one nothing and rest of two both walls.
+     */
+    public static LockedDoor generateLockedDoor(TETile[][] world, Player player) {
+        int doorPosX = 0;
+        int doorPosY = 0;
+        final int xScale = 10;
+        final int yScale = 10;
+        for (int x = Math.max(0, player.pos.x - xScale) + 1;
+             x < Math.min(player.pos.x + xScale, Game.WIDTH) - 1; x += 1) {
+            for (int y = Math.max(0, player.pos.y - yScale) + 1;
+                 y < Math.min(player.pos.y + yScale, Game.HEIGHT) - 1; y += 1) {
+                Position doorPos = new Position(x, y);
+                if (isLockedDoorPosValid(world, doorPos)) {
+                    doorPosX = x;
+                    doorPosY = y;
+                }
+            }
+        }
+        Position doorPos = new Position(doorPosX, doorPosY);
+        world[doorPos.x][doorPos.y] = Tileset.LOCKED_DOOR;
+        return new LockedDoor(doorPos);
+    }
+
+    /** Returns true if the position of the locked door is valid.
+     *  When I say "valid", I mean the door's position is originally wall,
+     *  and it must have four neighbor tiles,
+     *  with one floor and one nothing and rest of two both walls.
+     *  Helper function for the generateLockedDoor() method
+     */
+    private static boolean isLockedDoorPosValid(TETile[][] world, Position doorPos) {
+        if (world[doorPos.x][doorPos.y] != Tileset.WALL) {
+            return false;
+        }
+        int numWalls = 0;
+        int numNothing = 0;
+        int numFloor = 0;
+        Position[] neighbors = {
+                new Position(doorPos.x - 1, doorPos.y),
+                new Position(doorPos.x + 1, doorPos.y),
+                new Position(doorPos.x, doorPos.y + 1),
+                new Position(doorPos.x, doorPos.y - 1)
+        };
+        for (Position neighbor : neighbors) {
+            if (world[neighbor.x][neighbor.y] == Tileset.WALL) {
+                numWalls += 1;
+            } else if (world[neighbor.x][neighbor.y] == Tileset.FLOOR) {
+                numFloor += 1;
+            } else if (world[neighbor.x][neighbor.y] == Tileset.NOTHING) {
+                numNothing += 1;
+            }
+        }
+        return numFloor == 1 && numNothing == 1 && numWalls == 2;
+    }
 }
