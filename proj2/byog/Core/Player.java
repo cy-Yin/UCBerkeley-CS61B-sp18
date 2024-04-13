@@ -19,23 +19,23 @@ public class Player implements Serializable {
     public TETile[][] move(TETile[][] world, String moveInput) {
         while (!moveInput.isEmpty()) {
             char c = moveInput.charAt(0);
-            if ((c == 'W' || c == 'w') && (world[pos.x][pos.y + 1].equals(Tileset.FLOOR) ||
-                    world[pos.x][pos.y + 1].equals(Tileset.LOCKED_DOOR))) {
+            if ((c == 'W' || c == 'w') && (world[pos.x][pos.y + 1].equals(Tileset.FLOOR)
+                    || world[pos.x][pos.y + 1].equals(Tileset.LOCKED_DOOR))) {
                 world[pos.x][pos.y] = Tileset.FLOOR;
                 world[pos.x][pos.y + 1] = Tileset.PLAYER;
                 pos = new Position(pos.x, pos.y + 1);
-            } else if ((c == 'S' || c == 's') && (world[pos.x][pos.y - 1].equals(Tileset.FLOOR) ||
-                    world[pos.x][pos.y - 1].equals(Tileset.LOCKED_DOOR))) {
+            } else if ((c == 'S' || c == 's') && (world[pos.x][pos.y - 1].equals(Tileset.FLOOR)
+                    || world[pos.x][pos.y - 1].equals(Tileset.LOCKED_DOOR))) {
                 world[pos.x][pos.y] = Tileset.FLOOR;
                 world[pos.x][pos.y - 1] = Tileset.PLAYER;
                 pos = new Position(pos.x, pos.y - 1);
-            } else if ((c == 'A' || c == 'a') && (world[pos.x - 1][pos.y].equals(Tileset.FLOOR) ||
-                    world[pos.x - 1][pos.y].equals(Tileset.LOCKED_DOOR))) {
+            } else if ((c == 'A' || c == 'a') && (world[pos.x - 1][pos.y].equals(Tileset.FLOOR)
+                    || world[pos.x - 1][pos.y].equals(Tileset.LOCKED_DOOR))) {
                 world[pos.x][pos.y] = Tileset.FLOOR;
                 world[pos.x - 1][pos.y] = Tileset.PLAYER;
                 pos = new Position(pos.x - 1, pos.y);
-            } else if ((c == 'D' || c == 'd') && (world[pos.x + 1][pos.y].equals(Tileset.FLOOR) ||
-                    world[pos.x + 1][pos.y].equals(Tileset.LOCKED_DOOR))) {
+            } else if ((c == 'D' || c == 'd') && (world[pos.x + 1][pos.y].equals(Tileset.FLOOR)
+                    || world[pos.x + 1][pos.y].equals(Tileset.LOCKED_DOOR))) {
                 world[pos.x][pos.y] = Tileset.FLOOR;
                 world[pos.x + 1][pos.y] = Tileset.PLAYER;
                 pos = new Position(pos.x + 1, pos.y);

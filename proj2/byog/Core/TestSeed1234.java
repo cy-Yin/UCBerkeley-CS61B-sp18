@@ -20,26 +20,26 @@ public class TestSeed1234 {
     public void testPlayWithInputString() {
         TETile[][] world1 = new Game().playWithInputString("N1234SDDDWWWDDD");
 
-        TETile[][] world2_1 = new Game().playWithInputString("N1234SDDD:Q");
+        TETile[][] world2Temp1 = new Game().playWithInputString("N1234SDDD:Q");
         TETile[][] world2 = new Game().playWithInputString("LWWWDDD");
 
-        TETile[][] world3_1 = new Game().playWithInputString("N1234SDDD:Q");
-        TETile[][] world3_2 = new Game().playWithInputString("LWWW:Q");
+        TETile[][] world3Temp1 = new Game().playWithInputString("N1234SDDD:Q");
+        TETile[][] world3Temp2 = new Game().playWithInputString("LWWW:Q");
         TETile[][] world3 = new Game().playWithInputString("LDDD:Q");
 
-        TETile[][] world4_1 = new Game().playWithInputString("N1234SDDD:Q");
-        TETile[][] world4_2 = new Game().playWithInputString("L:Q");
-        TETile[][] world4_3 = new Game().playWithInputString("L:Q");
+        TETile[][] world4Temp1 = new Game().playWithInputString("N1234SDDD:Q");
+        TETile[][] world4Temp2 = new Game().playWithInputString("L:Q");
+        TETile[][] world4Temp3 = new Game().playWithInputString("L:Q");
         TETile[][] world4 = new Game().playWithInputString("LWWWDDD");
 
-        TETile[][] world5_1 = new Game().playWithInputString("N1234SAASSSSSS:Q");
-        TETile[][] world5_2 = new Game().playWithInputString("L:Q");
-        TETile[][] world5_3 = new Game().playWithInputString("L:Q");
+        TETile[][] world5Temp1 = new Game().playWithInputString("N1234SAASSSSSS:Q");
+        TETile[][] world5Temp2 = new Game().playWithInputString("L:Q");
+        TETile[][] world5Temp3 = new Game().playWithInputString("L:Q");
         TETile[][] world5 = new Game().playWithInputString("LAASSSWASD");
 
-        TETile[][] world6_1 = new Game().playWithInputString("N999SDD:Q");
-        TETile[][] world6_2 = new Game().playWithInputString("L:Q");
-        TETile[][] world6_3 = new Game().playWithInputString("L:Q");
+        TETile[][] world6Temp1 = new Game().playWithInputString("N999SDD:Q");
+        TETile[][] world6Temp2 = new Game().playWithInputString("L:Q");
+        TETile[][] world6Temp3 = new Game().playWithInputString("L:Q");
         TETile[][] world6 = new Game().playWithInputString("LWWWDDD");
 
         assertEquals(TETile.toString(world1), TETile.toString(world2));

@@ -4,8 +4,14 @@ import byog.TileEngine.TERenderer;
 import byog.TileEngine.TETile;
 import edu.princeton.cs.introcs.StdDraw;
 
-import java.awt.*;
-import java.io.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileInputStream;
+import java.io.ObjectOutputStream;
+import java.io.ObjectInputStream;
+import java.io.IOException;
 
 public class Game {
     TERenderer ter = new TERenderer();
@@ -108,7 +114,7 @@ public class Game {
 
         boolean gameOver = false;
         boolean suspectSaveAndQuit = false;
-        while(!gameOver) {
+        while (!gameOver) {
             if (StdDraw.hasNextKeyTyped()) {
                 char receivedKey = StdDraw.nextKeyTyped();
 
@@ -239,8 +245,8 @@ public class Game {
 
             /* if the User press ":q" or ":Q", save the game and exit. */
             if (input.charAt(i) == ':') {
-                if (i + 1 < input.length() &&
-                        (input.charAt(i + 1) == 'q' || input.charAt(i + 1) == 'Q')) {
+                if (i + 1 < input.length()
+                        && (input.charAt(i + 1) == 'q' || input.charAt(i + 1) == 'Q')) {
                     saveGame(world, mgp, player1, lockedDoor);
                     break;
                 }

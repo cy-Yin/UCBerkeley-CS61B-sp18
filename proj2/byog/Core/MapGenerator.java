@@ -204,10 +204,10 @@ public class MapGenerator {
         int numNothing = 0;
         int numFloor = 0;
         Position[] neighbors = {
-                new Position(doorPos.x - 1, doorPos.y),
-                new Position(doorPos.x + 1, doorPos.y),
-                new Position(doorPos.x, doorPos.y + 1),
-                new Position(doorPos.x, doorPos.y - 1)
+            new Position(doorPos.x - 1, doorPos.y),
+            new Position(doorPos.x + 1, doorPos.y),
+            new Position(doorPos.x, doorPos.y + 1),
+            new Position(doorPos.x, doorPos.y - 1)
         };
         for (Position neighbor : neighbors) {
             if (world[neighbor.x][neighbor.y] == Tileset.WALL) {
