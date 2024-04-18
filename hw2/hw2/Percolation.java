@@ -55,13 +55,15 @@ public class Percolation {
         if (row == 0) {
             topSet.union(virtualTopSite, xyTo1D(row, col));
             gridSet.union(virtualTopSite, xyTo1D(row, col));
-        } else if (row == n - 1) {
+        }
+        if (row == n - 1) {
             bottomSet.union(virtualBottomSite, xyTo1D(row, col));
             gridSet.union(virtualBottomSite, xyTo1D(row, col));
         }
         if (neighbors(row, col) != null) {
             for (int neighbor : neighbors(row, col)) { // num of neighbors can be 2, 3 or 4
-                // n1D = nRow * N + nCol, nCol always larger than 0 and smaller than N - 1: remainder
+                // n1D = nRow * N + nCol,
+                // nCol always larger than 0 and smaller than N - 1: remainder
                 int neighborCol = neighbor % n;
                 int neighborRow = (neighbor - neighborCol) / n;
                 if (isOpen(neighborRow, neighborCol)) {
