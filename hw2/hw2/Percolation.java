@@ -3,14 +3,14 @@ package hw2;
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 public class Percolation {
-    int n;
-    boolean[][] grid;
-    int numOpenSites;
-    int virtualTopSite;
-    int virtualBottomSite;
-    WeightedQuickUnionUF topSet;
-    WeightedQuickUnionUF bottomSet;
-    WeightedQuickUnionUF gridSet;
+    private int n;
+    private boolean[][] grid;
+    private int numOpenSites;
+    private int virtualTopSite;
+    private int virtualBottomSite;
+    private WeightedQuickUnionUF topSet;
+    private WeightedQuickUnionUF bottomSet;
+    private WeightedQuickUnionUF gridSet;
 
     /** Creates N-by-N grid, with all sites initially blocked. */
     public Percolation(int N) {
@@ -35,7 +35,7 @@ public class Percolation {
     }
 
     /** Coverts the 2D (row, col) coordinate to the int offset. */
-    int xyTo1D(int row, int col) {
+    private int xyTo1D(int row, int col) {
         return row * n + col;
     }
 
@@ -50,6 +50,7 @@ public class Percolation {
         }
 
         grid[row][col] = true;
+        numOpenSites += 1;
 
         if (row == 0) {
             topSet.union(virtualTopSite, xyTo1D(row, col));
@@ -58,13 +59,15 @@ public class Percolation {
             bottomSet.union(virtualBottomSite, xyTo1D(row, col));
             gridSet.union(virtualBottomSite, xyTo1D(row, col));
         }
-        for (int neighbor : neighbors(row, col)) { // num of neighbors can be 2, 3 or 4
-            // n1D = nRow * N + nCol, nCol always larger than 0 and smaller than N - 1: remainder
-            int neighborCol = neighbor % n;
-            int neighborRow = (neighbor - neighborCol) / n;
-            if (isOpen(neighborRow, neighborCol)) {
-                gridSet.union(neighbor, xyTo1D(row, col));
-                topSet.union(neighbor, xyTo1D(row, col));
+        if (neighbors(row, col) != null) {
+            for (int neighbor : neighbors(row, col)) { // num of neighbors can be 2, 3 or 4
+                // n1D = nRow * N + nCol, nCol always larger than 0 and smaller than N - 1: remainder
+                int neighborCol = neighbor % n;
+                int neighborRow = (neighbor - neighborCol) / n;
+                if (isOpen(neighborRow, neighborCol)) {
+                    gridSet.union(neighbor, xyTo1D(row, col));
+                    topSet.union(neighbor, xyTo1D(row, col));
+                }
             }
         }
     }
@@ -82,7 +85,11 @@ public class Percolation {
      *  the neighbors of 14 are 9, 13, 19
      *  the neighbors of 20 are 15, 21
      */
-    int[] neighbors(int row, int col) {
+    private int[] neighbors(int row, int col) {
+        if (n <= 1) {
+            return null;
+        }
+
         int upperNeighbor = xyTo1D(row - 1, col);
         int lowerNeighbor = xyTo1D(row + 1, col);
         int leftNeighbor = xyTo1D(row, col - 1);
@@ -134,5 +141,9 @@ public class Percolation {
     /** Returns true if the system percolates, and false otherwise. */
     public boolean percolates() {
         return gridSet.connected(virtualTopSite, virtualBottomSite);
+    }
+
+    public static void main(String[] args) {
+
     }
 }
