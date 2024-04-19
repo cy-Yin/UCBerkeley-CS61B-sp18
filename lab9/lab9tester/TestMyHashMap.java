@@ -128,6 +128,6 @@ public class TestMyHashMap {
     }
 
     public static void main(String[] args) {
-        jh61b.junit.TestRunner.runTests(TestMyHashMap.class);
+        jh61b.junit.TestRunner.runTests("all", TestMyHashMap.class);
     }
 }

@@ -1,5 +1,6 @@
 package lab9;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -53,19 +54,44 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
      */
     @Override
     public V get(K key) {
-        throw new UnsupportedOperationException();
+        return buckets[hash(key)].get(key);
     }
 
     /* Associates the specified value with the specified key in this map. */
     @Override
     public void put(K key, V value) {
-        throw new UnsupportedOperationException();
+        if (loadFactor() > MAX_LF) {
+            resize(buckets.length * 2);
+        }
+
+        if (buckets[hash(key)].containsKey(key)) {
+            buckets[hash(key)].put(key, value);
+        } else {
+            buckets[hash(key)].put(key, value);
+            size += 1;
+        }
+    }
+
+    /** resize the length of the buckets to the new length. */
+    private void resize(int length) {
+        ArrayMap<K, V>[] temp = new ArrayMap[buckets.length];
+        int oldSize = size();
+        System.arraycopy(buckets, 0, temp, 0, buckets.length);
+        buckets = new ArrayMap[length];
+        this.clear();
+        size = oldSize;
+
+        for (int i = 0; i < temp.length; i += 1) {
+            for (K key : temp[i]) {
+                buckets[hash(key)].put(key, temp[i].get(key));
+            }
+        }
     }
 
     /* Returns the number of key-value mappings in this map. */
     @Override
     public int size() {
-        throw new UnsupportedOperationException();
+        return size;
     }
 
     //////////////// EVERYTHING BELOW THIS LINE IS OPTIONAL ////////////////
@@ -73,7 +99,12 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
     /* Returns a Set view of the keys contained in this map. */
     @Override
     public Set<K> keySet() {
-        throw new UnsupportedOperationException();
+        Set<K> keySet = new HashSet<>();
+        for (int i = 0; i < buckets.length; i += 1) {
+            Set<K> bucketIndexSet = buckets[i].keySet();
+            keySet.addAll(bucketIndexSet);
+        }
+        return keySet;
     }
 
     /* Removes the mapping for the specified key from this map if exists.

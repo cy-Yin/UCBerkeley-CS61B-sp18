@@ -87,6 +87,6 @@ public class TestBSTMap {
     }
 
     public static void main(String[] args) {
-        jh61b.junit.TestRunner.runTests(TestBSTMap.class);
+        jh61b.junit.TestRunner.runTests("all", TestBSTMap.class);
     }
 }
