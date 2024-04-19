@@ -128,34 +128,56 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
      */
     @Override
     public V remove(K key) {
-//        V valueOfKey = get(key);
-//        root = removeHelper(key, root);
-//        return valueOfKey;
-        throw new UnsupportedOperationException();
+        V valueOfKey = get(key);
+        if (valueOfKey == null) {
+            return null;
+        }
+        root = removeHelper(key, root);
+        size -= 1;
+        return valueOfKey;
     }
 
-//    private Node removeHelper(K key, Node p) {
-//        if (key == null) {
-//            return null;
-//        }
-//        int cmp = key.compareTo(p.key);
-//        if (cmp < 0) {
-//            p.left = removeHelper(key, p.left);
-//        } else if (cmp > 0) {
-//            p.right = removeHelper(key, p.right);
-//        } else {
-//            if (p.right == null) {
-//                size -= 1;
-//                return p.left;
-//            }
-//            if (p.left == null) {
-//                size -= 1;
-//                return p.right;
-//            }
-//            // To Be Continued
-//        }
-//        return null;
-//    }
+    private Node removeHelper(K key, Node p) {
+        if (key == null) {
+            return null;
+        }
+        int cmp = key.compareTo(p.key);
+        if (cmp < 0) {
+            p.left = removeHelper(key, p.left);
+        } else if (cmp > 0) {
+            p.right = removeHelper(key, p.right);
+        } else {
+            if (p.right == null) {
+                return p.left;
+            }
+            if (p.left == null) {
+                return p.right;
+            }
+            Node temp = p;
+            p = minChild(temp.right);
+            p.right = removeMin(temp.right);
+            p.left = temp.left;
+        }
+        return p;
+    }
+
+    /** Returns the minimum node of the BST whose root is p. */
+    private Node minChild(Node p) {
+        if (p.left == null) {
+            return p;
+        }
+        return minChild(p.left);
+    }
+
+    /** Removes the minimum node of the BST whose root is p. */
+    private Node removeMin(Node p) {
+        if (p.left == null) {
+            return p.right;
+        }
+        p.left = removeMin(p.left);
+
+        return p;
+    }
 
     /** Removes the key-value entry for the specified key only if it is
      *  currently mapped to the specified value.  Returns the VALUE removed,
@@ -168,7 +190,7 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
 
     @Override
     public Iterator<K> iterator() {
-        throw new UnsupportedOperationException();
+        return keySet().iterator();
     }
 
     public static void main(String[] args) {
