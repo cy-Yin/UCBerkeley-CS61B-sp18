@@ -10,26 +10,38 @@ public class SimpleOomage implements Oomage {
     protected int blue;
 
     private static final double WIDTH = 0.01;
-    private static final boolean USE_PERFECT_HASH = false;
+    private static final boolean USE_PERFECT_HASH = true;
 
     @Override
     public boolean equals(Object o) {
-        // TODO: Write this method.
-        return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null) {
+            return false;
+        }
+        if (this.getClass() != o.getClass()) {
+            return false;
+        }
+        SimpleOomage so = (SimpleOomage) o;
+        return (this.red == so.red) && (this.green == so.green) && (this.blue == so.blue);
     }
 
-    /* Uncomment this method after you've written
-       equals and failed the testHashCodeAndEqualsConsistency
-       test.
+
     @Override
     public int hashCode() {
         if (!USE_PERFECT_HASH) {
             return red + green + blue;
         } else {
-            // TODO: Write a perfect hash function for Simple Oomages.
-            return 0;
+            /* Red, green and blue are the multiples of 5, ranging from 0 to 255,
+             * which means there are (255 - 0) / 5 + 1 = 52 values for each color to choose from.
+             * Therefore, our approach chooses 53 (equals to 52 plus 1)
+             * which is also a prime number as the base.
+             */
+            int hash = (red / 5) * 53 * 53 + (green / 5) * 53 + (blue / 5);
+            return hash;
         }
-    }*/
+    }
 
     public SimpleOomage(int r, int g, int b) {
         if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255) {

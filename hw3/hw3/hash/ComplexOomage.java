@@ -13,7 +13,11 @@ public class ComplexOomage implements Oomage {
     public int hashCode() {
         int total = 0;
         for (int x : params) {
-            total = total * 256;
+            /* change from 256 to 257, therefore the hashcode does not just left-shift by 12 bits.
+             * (which is equivalent to multiplying by 256). Base 257 guarantees top colors
+             * contribute to the remainder of the hashcode.
+             */
+            total = total * 257;
             total = total + x;
         }
         return total;
