@@ -182,13 +182,16 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
      */
     @Override
     public T removeMin() {
+        if (size == 0) {
+            return null;
+        }
         T minItem = peek(); // for minPQ, root is the node with smallest priority value.
         int rootIndex = 1;
         int lastIndex = size;
         swap(rootIndex, lastIndex);
         contents[lastIndex] = null; // remove the last item which is the previous root after swap
-        size -= 1;
         sink(rootIndex);
+        size -= 1;
         return minItem;
     }
 
@@ -214,7 +217,7 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
         if (item == null) {
             return;
         }
-        for (int i = 0; i < size; i += 1) {
+        for (int i = 1; i <= size; i += 1) {
             if (contents[i].item().equals(item)) {
                 double prevPriority = contents[i].priority();
                 contents[i].myPriority = priority;
