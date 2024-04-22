@@ -184,15 +184,20 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
     public T removeMin() {
         if (size == 0) {
             return null;
+        } else if (size == 1) {
+            T item = peek();
+            contents[1] = null;
+            return item;
+        } else {
+            T minItem = peek(); // for minPQ, root is the node with smallest priority value.
+            int rootIndex = 1;
+            int lastIndex = size;
+            swap(rootIndex, lastIndex);
+            contents[lastIndex] = null; // remove the last item which is the previous root after swap
+            sink(rootIndex);
+            size -= 1;
+            return minItem;
         }
-        T minItem = peek(); // for minPQ, root is the node with smallest priority value.
-        int rootIndex = 1;
-        int lastIndex = size;
-        swap(rootIndex, lastIndex);
-        contents[lastIndex] = null; // remove the last item which is the previous root after swap
-        sink(rootIndex);
-        size -= 1;
-        return minItem;
     }
 
     /**
