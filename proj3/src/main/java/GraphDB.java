@@ -3,10 +3,14 @@ import org.xml.sax.SAXException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import java.util.ArrayList;
+
 
 /**
  * Graph for storing all of the intersection (vertex) and road (edge) information.
@@ -20,6 +24,56 @@ import java.util.ArrayList;
 public class GraphDB {
     /** Your instance variables for storing the graph. You should consider
      * creating helper classes, e.g. Node, Edge, etc. */
+    Map<Long, Node> nodes = new HashMap<Long, Node>();
+    Map<Long, Way> ways = new HashMap<Long, Way>();
+    Map<String, Long> path = new HashMap<>();
+
+    public class Node {
+        long id;
+        double lon;
+        double lat;
+        List<Long> neighbors;
+        String name;
+
+        Node(long id, double lat, double lon) {
+            this.id = id;
+            this.lat = lat;
+            this.lon = lon;
+            this.neighbors = new ArrayList<>();
+            this.name = null;
+        }
+
+        void setName(String name) {
+            this.name = name;
+        }
+
+        /** Connecting this node A to another node B
+         * means A is B's neighbor and vice versa.
+         */
+        void connectTo(Node other) {
+            if (other.id == this.id) {
+                return;
+            }
+            this.neighbors.add(other.id);
+            other.neighbors.add(this.id);
+        }
+    }
+
+    public class Way {
+        long id;
+        List<Long> connectNodesId;
+        String name;
+
+        Way(long id) {
+            this.id = id;
+            this.connectNodesId = new ArrayList<>();
+            this.name = null;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+    }
 
     /**
      * Example constructor shows how to create and start an XML parser.
@@ -57,7 +111,14 @@ public class GraphDB {
      *  we can reasonably assume this since typically roads are connected.
      */
     private void clean() {
-        // TODO: Your code here.
+        // Your code here.
+        Map<Long, Node> nodesAfterClean = new HashMap<Long, Node>();
+        for (Node node : nodes.values()) {
+            if (!node.neighbors.isEmpty()) {
+                nodesAfterClean.put(node.id, node);
+            }
+        }
+        nodes = nodesAfterClean;
     }
 
     /**
@@ -65,8 +126,8 @@ public class GraphDB {
      * @return An iterable of id's of all vertices in the graph.
      */
     Iterable<Long> vertices() {
-        //YOUR CODE HERE, this currently returns only an empty list.
-        return new ArrayList<Long>();
+        //YOUR CODE HERE
+        return nodes.keySet();
     }
 
     /**
@@ -75,7 +136,7 @@ public class GraphDB {
      * @return An iterable of the ids of the neighbors of v.
      */
     Iterable<Long> adjacent(long v) {
-        return null;
+        return nodes.get(v).neighbors;
     }
 
     /**
@@ -129,6 +190,47 @@ public class GraphDB {
         return Math.toDegrees(Math.atan2(y, x));
     }
 
+    /** Returns which direction user to take according to the relative bearing.
+     * * Between -15 and 15 degrees the direction should be “Continue straight”.
+     * * Beyond -15 and 15 degrees but between -30 and 30 degrees
+     *      the direction should be “Slight left/right”.
+     * * Beyond -30 and 30 degrees but between -100 and 100 degrees
+     *      the direction should be “Turn left/right”.
+     * * Beyond -100 and 100 degrees the direction should be “Sharp left/right”.
+     * @param prevBearing the previous bearing
+     * @param bearing the current bearing
+     */
+    int calculateDirection(double prevBearing, double bearing) {
+        double diff = bearing - prevBearing;
+        
+        // Guarantee diff is always ranging from -180 to 180.
+        while (!(diff <= 180 && diff > -180)) {
+            if (diff < -180) {
+                diff += 360;
+            } else if (diff > 180) {
+                diff -= 360;
+            }
+        }
+        
+        if (diff >= -15.0 && diff <= 15.0) {
+            return Router.NavigationDirection.STRAIGHT;
+        } else if (diff >= -30.0 && diff < -15.0) {
+            return Router.NavigationDirection.SLIGHT_LEFT;
+        } else if (diff <= 30.0 && diff > 15.0) {
+            return Router.NavigationDirection.SLIGHT_RIGHT;
+        } else if (diff >= -100.0 && diff < -30.0) {
+            return Router.NavigationDirection.LEFT;
+        } else if (diff <= 100.0 && diff > 30.0) {
+            return Router.NavigationDirection.RIGHT;
+        } else {
+            if (diff < -100.0) {
+                return Router.NavigationDirection.SHARP_LEFT;
+            } else { // diff > 100.0
+                return Router.NavigationDirection.SHARP_RIGHT;
+            }
+        }
+    }
+
     /**
      * Returns the vertex closest to the given longitude and latitude.
      * @param lon The target longitude.
@@ -136,7 +238,16 @@ public class GraphDB {
      * @return The id of the node in the graph closest to the target.
      */
     long closest(double lon, double lat) {
-        return 0;
+        long closestId = 0;
+        double minDistance = Double.MAX_VALUE;
+        for (long w : vertices()) {
+            double distance = distance(lon, lat, lon(w), lat(w));
+            if (minDistance > distance) {
+                minDistance = distance;
+                closestId = w;
+            }
+        }
+        return closestId;
     }
 
     /**
@@ -145,7 +256,7 @@ public class GraphDB {
      * @return The longitude of the vertex.
      */
     double lon(long v) {
-        return 0;
+        return nodes.get(v).lon;
     }
 
     /**
@@ -154,6 +265,45 @@ public class GraphDB {
      * @return The latitude of the vertex.
      */
     double lat(long v) {
-        return 0;
+        return nodes.get(v).lat;
+    }
+
+    /** Adds the node to the graph. */
+    void addNode(long nodeId, double lon, double lat) {
+        Node node = new Node(nodeId, lon, lat);
+        nodes.put(nodeId, node);
+    }
+
+    /** Adds the way to the graph. */
+    void addWay(long wayId, List<Long> connectNodes) {
+        Way validWay = new Way(wayId);
+        validWay.connectNodesId = connectNodes;
+        ways.put(wayId, validWay);
+        for (int i = 0; i < connectNodes.size() - 1; i += 1) {
+            long nodeVId = connectNodes.get(i);
+            long nodeWId = connectNodes.get(i + 1);
+            nodes.get(nodeVId).connectTo(nodes.get(nodeWId));
+
+            path.put(nodeVId + "to" + nodeWId, wayId);
+            path.put(nodeWId + "to" + nodeVId, wayId);
+        }
+    }
+
+    /** Returns the way's id according to the ids of two nodes. */
+    Long findWayId(Long v, Long w) {
+        String pathName = v + "to" + w;
+        if (path.containsKey(pathName)) {
+            return path.get(pathName);
+        } else {
+            return (long) -1;
+        }
+    }
+
+    /** Returns the way's name from the input way id. */
+    String getWayName(Long wayId) {
+        if (!ways.containsKey(wayId) || ways.get(wayId).name == null) {
+            return Router.NavigationDirection.UNKNOWN_ROAD;
+        }
+        return ways.get(wayId).name;
     }
 }

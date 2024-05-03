@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -25,7 +26,19 @@ public class Router {
      */
     public static List<Long> shortestPath(GraphDB g, double stlon, double stlat,
                                           double destlon, double destlat) {
-        return null; // FIXME
+        /* We start at the node which is the closest to the demanded start location
+         * and end at the one which is the closest to the demanded end location.
+         */
+        long startNodeId = g.closest(stlon, stlat);
+        long endNodeId = g.closest(destlon, destlat);
+
+        Solver solver = new Solver(g, g.nodes.get(startNodeId), g.nodes.get(endNodeId));
+        List<Long> solution = solver.solver();
+
+        if (solution.isEmpty()) {
+            return null;
+        }
+        return solution;
     }
 
     /**
@@ -37,7 +50,51 @@ public class Router {
      * route.
      */
     public static List<NavigationDirection> routeDirections(GraphDB g, List<Long> route) {
-        return null; // FIXME
+        if (route.isEmpty() || route.size() == 1) {
+            return null;
+        }
+
+        List<NavigationDirection> navigationDirections = new ArrayList<>();
+
+        // initialization
+        double bearing = 0.0;
+        int direction = NavigationDirection.START;
+        long prevWayId = g.findWayId(route.get(0), route.get(1));
+        double distance = 0.0;
+
+        for (int i = 0; i < route.size() - 1; i += 1) {
+            long nodeId = route.get(i + 1);
+            long prevNodeId = route.get(i);
+            double prevBearing = bearing;
+            bearing = g.bearing(prevNodeId, nodeId);
+
+            long wayId = g.findWayId(prevNodeId, nodeId);
+            String wayName = g.getWayName(wayId);
+            String prevWayName = g.getWayName(prevWayId);
+            if (wayName.equals(prevWayName)) {
+                distance += g.distance(prevNodeId, nodeId);
+                continue;
+            }
+
+            NavigationDirection navigationDirection = new NavigationDirection();
+            navigationDirection.direction = direction;
+            navigationDirection.distance = distance;
+            navigationDirection.way = prevWayName;
+
+            navigationDirections.add(navigationDirection);
+
+            direction = g.calculateDirection(prevBearing, bearing);
+            distance = g.distance(prevNodeId, nodeId);
+            prevWayId = wayId;
+        }
+        NavigationDirection navigationDirection = new NavigationDirection();
+        navigationDirection.direction = direction;
+        navigationDirection.distance = distance;
+        navigationDirection.way = g.getWayName(prevWayId);
+
+        navigationDirections.add(navigationDirection);
+
+        return navigationDirections;
     }
 
 
