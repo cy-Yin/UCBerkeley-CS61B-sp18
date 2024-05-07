@@ -336,7 +336,7 @@ public class GraphDB {
         for (long nodeId : returnNodeIds) {
             tempMap.put("lat", nodesBeforeClean.get(nodeId).lat);
             tempMap.put("lon", nodesBeforeClean.get(nodeId).lon);
-            tempMap.put("name", nodesBeforeClean.get(nodeId).id);
+            tempMap.put("name", nodesBeforeClean.get(nodeId).name);
             tempMap.put("id", nodesBeforeClean.get(nodeId).id);
         }
         locationsList.add(tempMap);
