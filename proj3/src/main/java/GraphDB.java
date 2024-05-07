@@ -3,10 +3,10 @@ import org.xml.sax.SAXException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.ArrayList;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -27,6 +27,10 @@ public class GraphDB {
     Map<Long, Node> nodes = new HashMap<Long, Node>();
     Map<Long, Way> ways = new HashMap<Long, Way>();
     Map<String, Long> path = new HashMap<>();
+
+    MyTrie myTrie = new MyTrie();
+    Map<Long, Node> nodesBeforeClean = new HashMap<>();
+    Map<String, List<Long>> nodeMapNameToID = new HashMap<>();
 
     public class Node {
         long id;
@@ -112,6 +116,7 @@ public class GraphDB {
      */
     private void clean() {
         // Your code here.
+        nodesBeforeClean = nodes;
         Map<Long, Node> nodesAfterClean = new HashMap<Long, Node>();
         for (Node node : nodes.values()) {
             if (!node.neighbors.isEmpty()) {
@@ -305,5 +310,37 @@ public class GraphDB {
             return Router.NavigationDirection.UNKNOWN_ROAD;
         }
         return ways.get(wayId).name;
+    }
+
+    /* --------------------- Optional Gold Points ---------------- */
+
+
+    /** Returns the list of locations that have the demanded prefix. */
+    List<String> getLocationsByPrefix(String prefix) {
+        return myTrie.namesWithPrefix(prefix);
+    }
+
+    /** Returns the list of locations whose names are exactly the given locationName
+     *  Each item of the list is a map of parameters:
+     *  "lat" : Number, The latitude of the node. <br>
+     *  "lon" : Number, The longitude of the node. <br>
+     *  "name" : String, The actual name of the node. <br>
+     *  "id" : Number, The id of the node. <br>
+     */
+    List<Map<String, Object>> getLocations(String locationName) {
+        List<Map<String, Object>> locationsList = new ArrayList<>();
+        Map<String, Object> tempMap = new HashMap<>();
+
+        String cleanedName = cleanString(locationName);
+        List<Long> returnNodeIds = nodeMapNameToID.get(cleanedName);
+        for (long nodeId : returnNodeIds) {
+            tempMap.put("lat", nodesBeforeClean.get(nodeId).lat);
+            tempMap.put("lon", nodesBeforeClean.get(nodeId).lon);
+            tempMap.put("name", nodesBeforeClean.get(nodeId).id);
+            tempMap.put("id", nodesBeforeClean.get(nodeId).id);
+        }
+        locationsList.add(tempMap);
+
+        return locationsList;
     }
 }

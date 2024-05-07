@@ -138,7 +138,18 @@ public class GraphBuildingHandler extends DefaultHandler {
             node this tag belongs to. Remember XML is parsed top-to-bottom, so probably it's the
             last node that you looked at (check the first if-case). */
 //            System.out.println("Node's name: " + attributes.getValue("v"));
-            g.nodes.get(lastNodeId).setName(attributes.getValue("v"));
+            String nodeName = attributes.getValue("v");
+            g.nodes.get(lastNodeId).setName(nodeName);
+            g.myTrie.add(nodeName);
+
+            String cleanedNodeName = GraphDB.cleanString(nodeName);
+            if (!g.nodeMapNameToID.containsKey(cleanedNodeName)) {
+                List<Long> lst = new ArrayList<>();
+                lst.add(lastNodeId);
+                g.nodeMapNameToID.put(cleanedNodeName, lst);
+            } else {
+                g.nodeMapNameToID.get(cleanedNodeName).add(lastNodeId);
+            }
         }
     }
 
