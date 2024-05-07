@@ -329,17 +329,17 @@ public class GraphDB {
      */
     List<Map<String, Object>> getLocations(String locationName) {
         List<Map<String, Object>> locationsList = new ArrayList<>();
-        Map<String, Object> tempMap = new HashMap<>();
 
         String cleanedName = cleanString(locationName);
         List<Long> returnNodeIds = nodeMapNameToID.get(cleanedName);
         for (long nodeId : returnNodeIds) {
+            Map<String, Object> tempMap = new HashMap<>();
             tempMap.put("lat", nodesBeforeClean.get(nodeId).lat);
             tempMap.put("lon", nodesBeforeClean.get(nodeId).lon);
             tempMap.put("name", nodesBeforeClean.get(nodeId).name);
             tempMap.put("id", nodesBeforeClean.get(nodeId).id);
+            locationsList.add(tempMap);
         }
-        locationsList.add(tempMap);
 
         return locationsList;
     }
