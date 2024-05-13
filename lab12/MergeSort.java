@@ -35,7 +35,13 @@ public class MergeSort {
     private static <Item extends Comparable> Queue<Queue<Item>>
             makeSingleItemQueues(Queue<Item> items) {
         // Your code here!
-        return null;
+        Queue<Queue<Item>> queues = new Queue<>();
+        for (Item item : items) {
+            Queue<Item> queue = new Queue<>();
+            queue.enqueue(item);
+            queues.enqueue(queue);
+        }
+        return queues;
     }
 
     /**
@@ -54,13 +60,45 @@ public class MergeSort {
     private static <Item extends Comparable> Queue<Item> mergeSortedQueues(
             Queue<Item> q1, Queue<Item> q2) {
         // Your code here!
-        return null;
+        Queue<Item> mergeQueue = new Queue<>();
+        while (!q1.isEmpty() || !q2.isEmpty()) {
+            mergeQueue.enqueue(getMin(q1, q2));
+        }
+        return mergeQueue;
     }
 
     /** Returns a Queue that contains the given items sorted from least to greatest. */
     public static <Item extends Comparable> Queue<Item> mergeSort(
             Queue<Item> items) {
         // Your code here!
-        return items;
+        if (items.isEmpty()) {
+            return new Queue<>();
+        }
+        Queue<Queue<Item>> itemQueues = makeSingleItemQueues(items);
+        while (itemQueues.size() > 1) {
+            Queue<Item> q1 = itemQueues.dequeue();
+            Queue<Item> q2 = itemQueues.dequeue();
+            itemQueues.enqueue(mergeSortedQueues(q1, q2));
+        }
+        return itemQueues.dequeue();
+    }
+
+    // main() method as a lightweight test
+    public static void main(String[] args) {
+        Queue<String> students = new Queue<String>();
+        students.enqueue("Alice");
+        students.enqueue("Vanessa");
+        students.enqueue("Ethan");
+        Queue<String> studentsSorted = mergeSort(students);
+
+        for (String student : students) {
+            System.out.print(student + " ");
+        }
+        System.out.println();
+
+        for (String studentSorted : studentsSorted) {
+            System.out.print(studentSorted + " ");
+        }
+        System.out.println();
     }
 }
