@@ -27,9 +27,7 @@ public class RadixSort {
             maxLength = maxLength > s.length() ? maxLength : s.length();
         }
 
-        for (int i = maxLength - 1; i >= 0; i -= 1) {
-            sortHelperLSD(sortedAsciis, i);
-        }
+        sortHelperLSD(sortedAsciis, maxLength);
 
 //        sortHelperMSD(sortedAsciis, 0, asciis.length, 0);
 
@@ -44,41 +42,35 @@ public class RadixSort {
      */
     private static void sortHelperLSD(String[] asciis, int index) {
         // Optional LSD helper method for required LSD radix sort
-        String[] asciisSortedWithIndex = new String[asciis.length];
 
-        // ASCII strings have 256 possible characters: 0 to 255 (with null as 0)
-        int totalAsciis = 256;
-        // gather all the counts for each value
-        int[] counts = new int[totalAsciis];
-        for (String s : asciis) {
-            int i = (int) getCharAt(s, index);
-            counts[i]++;
+        int radix = 256; // Assuming ASCII characters
+
+        for (int i = index; i >= 0; i--) {
+            // Perform counting sort based on the character at the current index
+            int[] count = new int[radix + 1];
+            int n = asciis.length;
+
+            // Count frequencies of characters
+            for (String s : asciis) {
+                char c = (i < s.length()) ? s.charAt(i) : 0;
+                count[c + 1]++;
+            }
+
+            // Compute cumulative counts
+            for (int j = 0; j < radix; j++) {
+                count[j + 1] += count[j];
+            }
+
+            // Copy to auxiliary array according to counts
+            String[] aux = new String[n];
+            for (String s : asciis) {
+                char c = (i < s.length()) ? s.charAt(i) : 0;
+                aux[count[c]++] = s;
+            }
+
+            // Copy sorted strings back to original array
+            System.arraycopy(aux, 0, asciis, 0, n);
         }
-
-        // counting sort that uses start position calculation
-        int[] starts = new int[totalAsciis];
-        int pos = 0;
-        for (int i = 0; i < starts.length; i += 1) {
-            starts[i] = pos;
-            pos += counts[i];
-        }
-
-        for (int i = 0; i < asciis.length; i += 1) {
-            int itemIndex = (int) getCharAt(asciis[i], index);
-            int place = starts[itemIndex];
-            asciisSortedWithIndex[place] = asciis[i];
-            starts[itemIndex] += 1;
-        }
-
-        System.arraycopy(asciisSortedWithIndex, 0, asciis, 0, asciis.length);
-    }
-
-    /** Returns the character at the index of the string. */
-    private static Character getCharAt(String s, int index) {
-        if (index < 0 || index >= s.length()) {
-            return 0; // (int) null equals to 0
-        }
-        return s.charAt(index);
     }
 
     /**
@@ -106,8 +98,8 @@ public class RadixSort {
         // Counting sort to sort characters at current index
         int[] count = new int[256]; // Assuming ASCII characters
         for (int i = start; i < end; i++) {
-            int charIndex = (int) getCharAt(asciis[i], index);
-            count[charIndex]++;
+            char c = (index < asciis[i].length()) ? asciis[i].charAt(index) : 0;
+            count[c]++;
         }
 
         int[] starts = new int[256];
@@ -119,10 +111,10 @@ public class RadixSort {
 
         String[] aux = new String[end - start];
         for (int i = start; i < end; i++) {
-            int charIndex = (int) getCharAt(asciis[i], index);
-            int place = starts[charIndex];
+            char c = (index < asciis[i].length()) ? asciis[i].charAt(index) : 0;
+            int place = starts[c];
             aux[place] = asciis[i];
-            starts[charIndex]++;
+            starts[c]++;
         }
 
         // Copy sorted strings back to original array
@@ -138,7 +130,8 @@ public class RadixSort {
     }
 
 //    public static void main(String[] args) {
-//        String[] arr = new String[]{"trh5qwe", "12341234", "985634", "25sf", "a"};
+//        String[] arr = new String[]
+//                {"trh5qwe", "121234", "985634", "25sf", "a", "0", "", "sda413263"};
 ////        String[] arr = new String[]{"       ", "    ", " "};
 //        String[] sortedStd = arr.clone();
 //        Arrays.sort(sortedStd);
