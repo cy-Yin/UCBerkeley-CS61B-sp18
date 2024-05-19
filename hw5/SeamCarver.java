@@ -5,11 +5,11 @@ public class SeamCarver {
     private Picture picture;
     private int width;
     private int height;
-    double[][] energy;
+    private double[][] energy;
 
 
     public SeamCarver(Picture picture) {
-        this.picture = picture;
+        this.picture = new Picture(picture);
         width = picture.width();
         height = picture.height();
         energy = new double[width][height];
@@ -23,7 +23,7 @@ public class SeamCarver {
 
     /** Returns the current picture. */
     public Picture picture() {
-        return this.picture;
+        return new Picture(picture);
     }
 
     /** Returns the width of current picture. */
@@ -42,7 +42,6 @@ public class SeamCarver {
             throw new IndexOutOfBoundsException();
         }
 
-        double energy;
         double deltaXSquare;
         double deltaYSquare;
 
@@ -58,8 +57,7 @@ public class SeamCarver {
                      + (above.getGreen() - below.getGreen()) * (above.getGreen() - below.getGreen())
                      + (above.getBlue() - below.getBlue()) * (above.getBlue() - below.getBlue());
 
-        energy = deltaXSquare + deltaYSquare;
-        return energy;
+        return deltaXSquare + deltaYSquare;
     }
 
     /** Returns the sequence of indices for vertical seam. */
