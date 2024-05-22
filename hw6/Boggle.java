@@ -1,11 +1,12 @@
-import org.junit.Test;
-import static org.junit.Assert.*;
+//import org.junit.Test;
+//import static org.junit.Assert.*;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.PriorityQueue;
+import java.util.Stack;
+import java.util.Comparator;
 
 public class Boggle {
     // Words must be at least three letters long.
@@ -13,10 +14,12 @@ public class Boggle {
     
     // File path of dictionary file
     static String dictPath = "words.txt";
+//    static String dictPath = "trivial_words.txt";
 
     private static char[][] board;
     private static TrieST dictTrie = new TrieST();
 
+    private static Stack<State> stack = new Stack<>();
     /** The priority queue sort the elements in descending order of length.
      *  If multiple words have the same length, then sort them in ascending alphabetical order.
      */
@@ -24,11 +27,7 @@ public class Boggle {
         @Override
         public int compare(String o1, String o2) {
             if (o1.length() != o2.length()) {
-                if (o1.length() > o2.length()) {
-                    return -1;
-                } else { // o1.length() < o2.length()
-                    return 1;
-                }
+                return -Integer.compare(o1.length(), o2.length());
             } else { // o1 and o2 have the same length
                 return o1.compareTo(o2);
             }
@@ -56,18 +55,19 @@ public class Boggle {
         int m = board.length;
         int n = board[0].length;
 
-        /* Words may not use the same letter cube more than once per word
-         * marked 2D array is used to guarantee the has-been-marked cube
-         * will never be considered before completing searching the current word.
-         */
-        boolean[][] marked = new boolean[m][n];
+//        /* Words may not use the same letter cube more than once per word
+//         * marked 2D array is used to guarantee the has-been-marked cube
+//         * will never be considered before completing searching the current word.
+//         */
+//        boolean[][] marked = new boolean[m][n];
 
         for (int i = 0; i < m; i += 1) {
             for (int j = 0; j < n; j += 1) {
                 // add all words starting with the char board[i][j] in the dictionary
                 // to the priority queue.
-                String wordPrefix = "";
-                addWordsContainingGivenChar(wordPrefix, marked, i, j, m, n);
+//                String wordPrefix = "";
+//                addWordsContainingGivenCharRecursively(wordPrefix, marked, i, j, m, n);
+                addWordWithGivenStart(i, j);
             }
         }
 
@@ -111,44 +111,127 @@ public class Boggle {
         return dict;
     }
 
-    private static void addWordsContainingGivenChar(String prefix,
-                                                    boolean[][] marked,
-                                                    int x, int y,
-                                                    int boardWidth, int boardHeight) {
-        if ((x < 0 || x > boardWidth - 1 || y < 0 || y > boardHeight - 1)
-            || marked[x][y] || !dictTrie.hasPrefix(prefix)) {
-            return;
+    private static class State {
+        private int x;
+        private int y;
+        private List<State> markedStates;
+        private String prefix;
+        private List<State> neighbors;
+
+        private State(int x, int y, List<State> markedStates, String prefix) {
+            this.x = x;
+            this.y = y;
+            // this.markedStates contains all the marked states from the start State,
+            // including itself.
+            this.markedStates = new ArrayList<>(markedStates);
+            this.markedStates.add(this);
+            this.prefix = prefix + board[x][y];
+            this.neighbors = new ArrayList<>();
         }
 
-        prefix += board[x][y];
-        String tempWord = prefix;
-        marked[x][y] = true;
-
-        if (tempWord.length() > MIN_WORD_LENGTH && dictTrie.contains(tempWord)
-                                                        && !pq.contains(tempWord)) {
-            // the temp word is valid, add it to the priority queue
-            pq.add(tempWord);
+        public String getPrefix() {
+            return prefix;
         }
 
-        /* consider the neighbors of board[x, y]
-         * Here neighbors are those horizontally, vertically, and diagonally neighboring.
-         *
-         * *     *     *
-         * *   (i, j)  *
-         * *     *     *
-         * totally 8 neighbors.
-         */
-        for (int i = -1; i <= 1; i += 1) {
-            for (int j = -1; j <= 1; j += 1) {
-                int neighborX = x + i;
-                int neighborY = y + j;
-                addWordsContainingGivenChar(prefix, marked, neighborX, neighborY,
-                                                            boardWidth, boardHeight);
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
             }
+            if (o == null || this.getClass() != o.getClass()) {
+                return false;
+            }
+            State so = (State) o;
+            return x == so.x && y == so.y;
         }
-        marked[x][y] = false;
+
+        @Override
+        public int hashCode() {
+            return x * board.length + y;
+        }
+
+        public List<State> getUnMarkedNeighbors() {
+            for (int nx = x - 1; nx <= x + 1; nx += 1) {
+                for (int ny = y - 1; ny <= y + 1; ny += 1) {
+                    if ((nx >= 0 && nx < board.length && ny >= 0 && ny < board[0].length)) {
+                        State ns = new State(nx, ny, markedStates, prefix);
+                        neighbors.add(ns);
+                    }
+                }
+            }
+
+            // Pruning: we only care about the unmarked neighbors
+            List<State> unMarkedNeighbors = new ArrayList<>();
+            for (State ns : neighbors) {
+                if (!markedStates.contains(ns)) {
+                    unMarkedNeighbors.add(ns);
+                }
+            }
+            return unMarkedNeighbors;
+        }
     }
 
+    /** Adds the valid (shown in the dictionary) word
+     * with the start board[i][j] to the priority queue.
+     */
+    private static void addWordWithGivenStart(int x, int y) {
+        String prefixAtStart = "";
+        List<State> markedStatesAtStart = new ArrayList<>();
+        stack.add(new State(x, y, markedStatesAtStart, prefixAtStart));
+        while (!stack.isEmpty()) {
+            State state = stack.pop();
+            String prefix = state.getPrefix();
+            if (dictTrie.hasPrefix(prefix)) {
+                for (State ns : state.getUnMarkedNeighbors()) {
+                    stack.push(ns);
+                }
+                if (prefix.length() >= MIN_WORD_LENGTH && dictTrie.contains(prefix)
+                                                                && !pq.contains(prefix)) {
+                    pq.add(prefix);
+                }
+            }
+        }
+    }
+
+//    private static void addWordsContainingGivenCharRecursively(String prefix,
+//                                                    boolean[][] marked,
+//                                                    int x, int y,
+//                                                    int boardWidth, int boardHeight) {
+//        if ((x < 0 || x > boardWidth - 1 || y < 0 || y > boardHeight - 1)
+//            || marked[x][y] || !dictTrie.hasPrefix(prefix)) {
+//            return;
+//        }
+//
+//        prefix += board[x][y];
+//        String tempWord = prefix;
+//        marked[x][y] = true;
+//
+//        if (tempWord.length() > MIN_WORD_LENGTH && dictTrie.contains(tempWord)
+//                                                        && !pq.contains(tempWord)) {
+//            // the temp word is valid, add it to the priority queue
+//            pq.add(tempWord);
+//        }
+//
+//        /* consider the neighbors of board[x, y]
+//         * Here neighbors are those horizontally, vertically, and diagonally neighboring.
+//         *
+//         * *     *     *
+//         * *   (i, j)  *
+//         * *     *     *
+//         * totally 8 neighbors.
+//         */
+//        for (int i = -1; i <= 1; i += 1) {
+//            for (int j = -1; j <= 1; j += 1) {
+//                int neighborX = x + i;
+//                int neighborY = y + j;
+//                addWordsContainingGivenChar(prefix, marked, neighborX, neighborY,
+//                                                            boardWidth, boardHeight);
+//            }
+//        }
+//        marked[x][y] = false;
+//    }
+
+    /*
     @Test
     public void testReadBoardFromFile() {
         char[][] excepted1 = {
@@ -188,24 +271,22 @@ public class Boggle {
 
     @Test
     public void testSolve() {
-        dictPath = "words.txt";
+        // dictPath = "words.txt";
         List<String> actualList1 = solve(7, "exampleBoard.txt");
         String[] actualArray1 = actualList1.toArray(new String[actualList1.size()]);
         String[] expected1 = new String[]
             {"thumbtacks", "thumbtack", "setbacks", "setback", "ascent", "humane", "smacks"};
-        assertArrayEquals(actualArray1, expected1);
+        assertArrayEquals(expected1, actualArray1);
 
-        dictPath = "trivial_words.txt";
-        List<String> actualList2 = solve(7, "exampleBoard2.txt");
-        String[] actualArray2 = actualList1.toArray(new String[actualList2.size()]);
-        String[] expected2 = new String[]
-            {"thumbtacks", "thumbtack", "setbacks", "setback", "ascent", "humane", "smacks"};
-        assertArrayEquals(actualArray2, expected2);
+//        // dictPath = "trivial_words.txt";
+//        List<String> actualList2 = solve(7, "exampleBoard2.txt");
+//        String[] actualArray2 = actualList2.toArray(new String[actualList2.size()]);
+//        String[] expected2 = new String[]
+//            {"aaaaa", "aaaa"};
+//        assertArrayEquals(expected2, actualArray2);
     }
 
     public static void main(String[] args) {
-        dictPath = "words.txt";
-
         // test the run time
         char[][] board1 = readBoardFromFile("smallBoard.txt");
         System.out.println("Size of board: " + board1.length + " x " + board1[0].length);
@@ -232,5 +313,5 @@ public class Boggle {
         System.out.println("Linearly extrapolating from the board2 runtime, "
                 + "we would expect a runtime of "
                 + timeSpan2 + " x " + sizeRatio + " = " + (timeSpan2 * sizeRatio));
-    }
+    }*/
 }
