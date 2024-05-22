@@ -2,7 +2,11 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 import java.io.File;
-import java.util.*;
+import java.util.Stack;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.TreeSet;
+import java.util.Comparator;
 
 public class Boggle {
     // Words must be at least three letters long.
@@ -54,19 +58,19 @@ public class Boggle {
             }
         });
 
-        /* Words may not use the same letter cube more than once per word
-         * marked 2D array is used to guarantee the has-been-marked cube
-         * will never be considered before completing searching the current word.
-         */
-        boolean[][] marked = new boolean[m][n];
+//        /* Words may not use the same letter cube more than once per word
+//         * marked 2D array is used to guarantee the has-been-marked cube
+//         * will never be considered before completing searching the current word.
+//         */
+//        boolean[][] marked = new boolean[m][n];
 
         for (int i = 0; i < m; i += 1) {
             for (int j = 0; j < n; j += 1) {
                 // add all words starting with the char board[i][j] in the dictionary
                 // to the priority queue.
-                String wordPrefix = "";
-                addWordsContainingGivenCharRecursively(wordPrefix, marked, i, j, m, n);
-//                addWordWithGivenStart(i, j);
+//                String wordPrefix = "";
+//                addWordsContainingGivenCharRecursively(wordPrefix, marked, i, j, m, n);
+                addWordWithGivenStart(i, j);
             }
         }
 
@@ -195,42 +199,42 @@ public class Boggle {
         }
     }
 
-    private static void addWordsContainingGivenCharRecursively(String prefix,
-                                                    boolean[][] marked,
-                                                    int x, int y,
-                                                    int boardWidth, int boardHeight) {
-        if ((x < 0 || x > boardWidth - 1 || y < 0 || y > boardHeight - 1)
-            || marked[x][y] || !dictTrie.hasPrefix(prefix)) {
-            return;
-        }
-
-        prefix += board[x][y];
-        String tempWord = prefix;
-        marked[x][y] = true;
-
-        if (tempWord.length() >= MIN_WORD_LENGTH && dictTrie.contains(tempWord)) {
-            // the temp word is valid, add it to the priority queue
-            set.add(tempWord);
-        }
-
-        /* consider the neighbors of board[x, y]
-         * Here neighbors are those horizontally, vertically, and diagonally neighboring.
-         *
-         * *     *     *
-         * *   (i, j)  *
-         * *     *     *
-         * totally 8 neighbors.
-         */
-        for (int i = -1; i <= 1; i += 1) {
-            for (int j = -1; j <= 1; j += 1) {
-                int neighborX = x + i;
-                int neighborY = y + j;
-                addWordsContainingGivenCharRecursively(prefix, marked, neighborX, neighborY,
-                                                            boardWidth, boardHeight);
-            }
-        }
-        marked[x][y] = false;
-    }
+//    private static void addWordsContainingGivenCharRecursively(String prefix,
+//                                                    boolean[][] marked,
+//                                                    int x, int y,
+//                                                    int boardWidth, int boardHeight) {
+//        if ((x < 0 || x > boardWidth - 1 || y < 0 || y > boardHeight - 1)
+//            || marked[x][y] || !dictTrie.hasPrefix(prefix)) {
+//            return;
+//        }
+//
+//        prefix += board[x][y];
+//        String tempWord = prefix;
+//        marked[x][y] = true;
+//
+//        if (tempWord.length() >= MIN_WORD_LENGTH && dictTrie.contains(tempWord)) {
+//            // the temp word is valid, add it to the priority queue
+//            set.add(tempWord);
+//        }
+//
+//        /* consider the neighbors of board[x, y]
+//         * Here neighbors are those horizontally, vertically, and diagonally neighboring.
+//         *
+//         * *     *     *
+//         * *   (i, j)  *
+//         * *     *     *
+//         * totally 8 neighbors.
+//         */
+//        for (int i = -1; i <= 1; i += 1) {
+//            for (int j = -1; j <= 1; j += 1) {
+//                int neighborX = x + i;
+//                int neighborY = y + j;
+//                addWordsContainingGivenCharRecursively(prefix, marked, neighborX, neighborY,
+//                                                            boardWidth, boardHeight);
+//            }
+//        }
+//        marked[x][y] = false;
+//    }
 
     @Test
     public void testReadBoardFromFile() {
