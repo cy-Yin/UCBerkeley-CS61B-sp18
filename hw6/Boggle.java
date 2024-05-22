@@ -4,7 +4,7 @@
 import java.io.File;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.PriorityQueue;
+import java.util.TreeSet;
 import java.util.Stack;
 import java.util.Comparator;
 
@@ -23,7 +23,7 @@ public class Boggle {
     /** The priority queue sort the elements in descending order of length.
      *  If multiple words have the same length, then sort them in ascending alphabetical order.
      */
-    private static PriorityQueue<String> pq = new PriorityQueue<>(new Comparator<String>() {
+    private static TreeSet<String> set = new TreeSet<>(new Comparator<String>() {
         @Override
         public int compare(String o1, String o2) {
             if (o1.length() != o2.length()) {
@@ -73,8 +73,8 @@ public class Boggle {
 
         // returns the first k strings in the sorted priority queue.
         List<String> firstKWordsToReturn = new ArrayList<>();
-        while (firstKWordsToReturn.size() < k && !pq.isEmpty()) {
-            firstKWordsToReturn.add(pq.poll());
+        while (firstKWordsToReturn.size() < k && !set.isEmpty()) {
+            firstKWordsToReturn.add(set.pollFirst());
         }
 
         return firstKWordsToReturn;
@@ -186,8 +186,8 @@ public class Boggle {
                     stack.push(ns);
                 }
                 if (prefix.length() >= MIN_WORD_LENGTH && dictTrie.contains(prefix)
-                                                                && !pq.contains(prefix)) {
-                    pq.add(prefix);
+                                                                && !set.contains(prefix)) {
+                    set.add(prefix);
                 }
             }
         }
@@ -207,9 +207,9 @@ public class Boggle {
 //        marked[x][y] = true;
 //
 //        if (tempWord.length() > MIN_WORD_LENGTH && dictTrie.contains(tempWord)
-//                                                        && !pq.contains(tempWord)) {
+//                                                        && !set.contains(tempWord)) {
 //            // the temp word is valid, add it to the priority queue
-//            pq.add(tempWord);
+//            set.add(tempWord);
 //        }
 //
 //        /* consider the neighbors of board[x, y]
@@ -224,7 +224,7 @@ public class Boggle {
 //            for (int j = -1; j <= 1; j += 1) {
 //                int neighborX = x + i;
 //                int neighborY = y + j;
-//                addWordsContainingGivenChar(prefix, marked, neighborX, neighborY,
+//                addWordsContainingGivenCharRecursively(prefix, marked, neighborX, neighborY,
 //                                                            boardWidth, boardHeight);
 //            }
 //        }

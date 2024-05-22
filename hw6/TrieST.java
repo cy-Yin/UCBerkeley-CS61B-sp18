@@ -1,3 +1,6 @@
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  *  The {@code TrieST} class represents an ordered set of strings over
  *  the extended ASCII alphabet.
@@ -7,14 +10,12 @@
  *  <i>Algorithms in Java, 4th Edition</i> by Robert Sedgewick and Kevin Wayne.
  */
 public class TrieST {
-    private static final int R = 256;        // extended ASCII
-
     private Node root;      // root of trie
     private int n;          // number of keys in trie
 
     // R-way trie node
     private static class Node {
-        private Node[] next = new Node[R];
+        private Map<Character, Node> next = new HashMap<>();
         private boolean isString;
     }
 
@@ -50,7 +51,7 @@ public class TrieST {
             return x;
         }
         char c = key.charAt(d);
-        return get(x.next[c], key, d + 1);
+        return get(x.next.get(c), key, d + 1);
     }
 
     /**
@@ -76,7 +77,7 @@ public class TrieST {
             x.isString = true;
         } else {
             char c = key.charAt(d);
-            x.next[c] = add(x.next[c], key, d + 1);
+            x.next.put(c, add(x.next.get(c), key, d + 1));
         }
         return x;
     }
