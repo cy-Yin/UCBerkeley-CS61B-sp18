@@ -11,7 +11,6 @@ import java.util.Map;
  */
 public class TrieST {
     private Node root;      // root of trie
-    private int n;          // number of keys in trie
 
     // R-way trie node
     private static class Node {
@@ -44,17 +43,6 @@ public class TrieST {
         return cur.isString;
     }
 
-    private Node get(Node x, String key, int d) {
-        if (x == null) {
-            return null;
-        }
-        if (d == key.length()) {
-            return x;
-        }
-        char c = key.charAt(d);
-        return get(x.next.get(c), key, d + 1);
-    }
-
     /**
      * Adds the key to the set if it is not already present.
      * @param key the key to add
@@ -67,22 +55,6 @@ public class TrieST {
             cur = cur.next.get(c);
         }
         cur.isString = true;
-    }
-
-    /**
-     * Returns the number of strings in the set.
-     * @return the number of strings in the set
-     */
-    public int size() {
-        return n;
-    }
-
-    /**
-     * Is the set empty?
-     * @return {@code true} if the set is empty, and {@code false} otherwise
-     */
-    public boolean isEmpty() {
-        return size() == 0;
     }
 
     /**

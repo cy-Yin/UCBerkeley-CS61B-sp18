@@ -2,11 +2,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 import java.io.File;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.TreeSet;
-import java.util.Stack;
-import java.util.Comparator;
+import java.util.*;
 
 public class Boggle {
     // Words must be at least three letters long.
@@ -17,22 +13,14 @@ public class Boggle {
 //    static String dictPath = "trivial_words.txt";
 
     private static char[][] board;
-    private static TrieST dictTrie = new TrieST();
+    private static TrieST dictTrie;
 
-    private static Stack<State> stack = new Stack<>();
+    private static Stack<State> stack;
+
     /** The priority queue sort the elements in descending order of length.
      *  If multiple words have the same length, then sort them in ascending alphabetical order.
      */
-    private static TreeSet<String> set = new TreeSet<>(new Comparator<String>() {
-        @Override
-        public int compare(String o1, String o2) {
-            if (o1.length() != o2.length()) {
-                return -Integer.compare(o1.length(), o2.length());
-            } else { // o1 and o2 have the same length
-                return o1.compareTo(o2);
-            }
-        }
-    });
+    private static TreeSet<String> set;
 
     /**
      * Solves a Boggle puzzle.
@@ -55,19 +43,30 @@ public class Boggle {
         int m = board.length;
         int n = board[0].length;
 
-//        /* Words may not use the same letter cube more than once per word
-//         * marked 2D array is used to guarantee the has-been-marked cube
-//         * will never be considered before completing searching the current word.
-//         */
-//        boolean[][] marked = new boolean[m][n];
+        set = new TreeSet<>(new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                if (o1.length() != o2.length()) {
+                    return -Integer.compare(o1.length(), o2.length());
+                } else { // o1 and o2 have the same length
+                    return o1.compareTo(o2);
+                }
+            }
+        });
+
+        /* Words may not use the same letter cube more than once per word
+         * marked 2D array is used to guarantee the has-been-marked cube
+         * will never be considered before completing searching the current word.
+         */
+        boolean[][] marked = new boolean[m][n];
 
         for (int i = 0; i < m; i += 1) {
             for (int j = 0; j < n; j += 1) {
                 // add all words starting with the char board[i][j] in the dictionary
                 // to the priority queue.
-//                String wordPrefix = "";
-//                addWordsContainingGivenCharRecursively(wordPrefix, marked, i, j, m, n);
-                addWordWithGivenStart(i, j);
+                String wordPrefix = "";
+                addWordsContainingGivenCharRecursively(wordPrefix, marked, i, j, m, n);
+//                addWordWithGivenStart(i, j);
             }
         }
 
@@ -179,6 +178,7 @@ public class Boggle {
     private static void addWordWithGivenStart(int x, int y) {
         String prefixAtStart = "";
         List<State> markedStatesAtStart = new ArrayList<>();
+        stack = new Stack<>();
         stack.add(new State(x, y, markedStatesAtStart, prefixAtStart));
         while (!stack.isEmpty()) {
             State state = stack.pop();
@@ -195,42 +195,42 @@ public class Boggle {
         }
     }
 
-//    private static void addWordsContainingGivenCharRecursively(String prefix,
-//                                                    boolean[][] marked,
-//                                                    int x, int y,
-//                                                    int boardWidth, int boardHeight) {
-//        if ((x < 0 || x > boardWidth - 1 || y < 0 || y > boardHeight - 1)
-//            || marked[x][y] || !dictTrie.hasPrefix(prefix)) {
-//            return;
-//        }
-//
-//        prefix += board[x][y];
-//        String tempWord = prefix;
-//        marked[x][y] = true;
-//
-//        if (tempWord.length() >= MIN_WORD_LENGTH && dictTrie.contains(tempWord)) {
-//            // the temp word is valid, add it to the priority queue
-//            set.add(tempWord);
-//        }
-//
-//        /* consider the neighbors of board[x, y]
-//         * Here neighbors are those horizontally, vertically, and diagonally neighboring.
-//         *
-//         * *     *     *
-//         * *   (i, j)  *
-//         * *     *     *
-//         * totally 8 neighbors.
-//         */
-//        for (int i = -1; i <= 1; i += 1) {
-//            for (int j = -1; j <= 1; j += 1) {
-//                int neighborX = x + i;
-//                int neighborY = y + j;
-//                addWordsContainingGivenCharRecursively(prefix, marked, neighborX, neighborY,
-//                                                            boardWidth, boardHeight);
-//            }
-//        }
-//        marked[x][y] = false;
-//    }
+    private static void addWordsContainingGivenCharRecursively(String prefix,
+                                                    boolean[][] marked,
+                                                    int x, int y,
+                                                    int boardWidth, int boardHeight) {
+        if ((x < 0 || x > boardWidth - 1 || y < 0 || y > boardHeight - 1)
+            || marked[x][y] || !dictTrie.hasPrefix(prefix)) {
+            return;
+        }
+
+        prefix += board[x][y];
+        String tempWord = prefix;
+        marked[x][y] = true;
+
+        if (tempWord.length() >= MIN_WORD_LENGTH && dictTrie.contains(tempWord)) {
+            // the temp word is valid, add it to the priority queue
+            set.add(tempWord);
+        }
+
+        /* consider the neighbors of board[x, y]
+         * Here neighbors are those horizontally, vertically, and diagonally neighboring.
+         *
+         * *     *     *
+         * *   (i, j)  *
+         * *     *     *
+         * totally 8 neighbors.
+         */
+        for (int i = -1; i <= 1; i += 1) {
+            for (int j = -1; j <= 1; j += 1) {
+                int neighborX = x + i;
+                int neighborY = y + j;
+                addWordsContainingGivenCharRecursively(prefix, marked, neighborX, neighborY,
+                                                            boardWidth, boardHeight);
+            }
+        }
+        marked[x][y] = false;
+    }
 
     @Test
     public void testReadBoardFromFile() {
