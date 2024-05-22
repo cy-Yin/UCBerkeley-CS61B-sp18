@@ -1,5 +1,5 @@
-//import org.junit.Test;
-//import static org.junit.Assert.*;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.util.List;
@@ -102,10 +102,12 @@ public class Boggle {
 
     /** Reads and returns the dictionary trie from the dictionary file path. */
     private static TrieST readDictFromFile(String dictionaryPath) {
+        if (!new File(dictionaryPath).exists()) {
+            throw new IllegalArgumentException();
+        }
         TrieST dict = new TrieST();
         String[] dictWords = new In(dictionaryPath).readAllLines();
         for (String dictWord : dictWords) {
-            dictWord = dictWord.toLowerCase();
             dict.add(dictWord);
         }
         return dict;
@@ -206,8 +208,7 @@ public class Boggle {
 //        String tempWord = prefix;
 //        marked[x][y] = true;
 //
-//        if (tempWord.length() > MIN_WORD_LENGTH && dictTrie.contains(tempWord)
-//                                                        && !set.contains(tempWord)) {
+//        if (tempWord.length() >= MIN_WORD_LENGTH && dictTrie.contains(tempWord)) {
 //            // the temp word is valid, add it to the priority queue
 //            set.add(tempWord);
 //        }
@@ -231,7 +232,6 @@ public class Boggle {
 //        marked[x][y] = false;
 //    }
 
-    /*
     @Test
     public void testReadBoardFromFile() {
         char[][] excepted1 = {
@@ -257,9 +257,7 @@ public class Boggle {
     public void testReadDictFromFile() {
         TrieST dict = readDictFromFile("words.txt");
         assertTrue(dict.contains("thumbtacks"));
-        assertTrue(dict.contains("british"));
-        assertFalse(dict.contains("BirthDay")); // all words in dictTrie must be lowercase.
-        assertTrue(dict.contains("american's"));
+        assertTrue(dict.contains("American's"));
 
         TrieST trivialDict = readDictFromFile("trivial_words.txt");
         assertTrue(trivialDict.contains("aaaaa"));
@@ -271,19 +269,21 @@ public class Boggle {
 
     @Test
     public void testSolve() {
-        // dictPath = "words.txt";
+        dictPath = "words.txt";
         List<String> actualList1 = solve(7, "exampleBoard.txt");
         String[] actualArray1 = actualList1.toArray(new String[actualList1.size()]);
         String[] expected1 = new String[]
             {"thumbtacks", "thumbtack", "setbacks", "setback", "ascent", "humane", "smacks"};
         assertArrayEquals(expected1, actualArray1);
+    }
 
-//        // dictPath = "trivial_words.txt";
-//        List<String> actualList2 = solve(7, "exampleBoard2.txt");
-//        String[] actualArray2 = actualList2.toArray(new String[actualList2.size()]);
-//        String[] expected2 = new String[]
-//            {"aaaaa", "aaaa"};
-//        assertArrayEquals(expected2, actualArray2);
+    @Test
+    public void testSolveWithTrivialDict() {
+        dictPath = "trivial_words.txt";
+        List<String> actualList2 = solve(20, "exampleBoard2.txt");
+        String[] actualArray2 = actualList2.toArray(new String[actualList2.size()]);
+        String[] expected2 = new String[]{"aaaaa", "aaaa"};
+        assertArrayEquals(expected2, actualArray2);
     }
 
     public static void main(String[] args) {
@@ -313,5 +313,5 @@ public class Boggle {
         System.out.println("Linearly extrapolating from the board2 runtime, "
                 + "we would expect a runtime of "
                 + timeSpan2 + " x " + sizeRatio + " = " + (timeSpan2 * sizeRatio));
-    }*/
+    }
 }

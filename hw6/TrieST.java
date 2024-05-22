@@ -23,6 +23,7 @@ public class TrieST {
      * Initializes an empty set of strings.
      */
     public TrieST() {
+        root = new Node();
     }
 
     /**
@@ -33,14 +34,14 @@ public class TrieST {
      * @throws IllegalArgumentException if {@code key} is {@code null}
      */
     public boolean contains(String key) {
-        if (key == null) {
-            throw new IllegalArgumentException("argument to contains() is null");
+        Node cur = root;
+        for (char c : key.toCharArray()) {
+            cur = cur.next.get(c);
+            if (cur == null) {
+                return false;
+            }
         }
-        Node x = get(root, key, 0);
-        if (x == null) {
-            return false;
-        }
-        return x.isString;
+        return cur.isString;
     }
 
     private Node get(Node x, String key, int d) {
@@ -60,26 +61,12 @@ public class TrieST {
      * @throws IllegalArgumentException if {@code key} is {@code null}
      */
     public void add(String key) {
-        if (key == null) {
-            throw new IllegalArgumentException("argument to add() is null");
+        Node cur = root;
+        for (char c : key.toCharArray()) {
+            cur.next.putIfAbsent(c, new Node());
+            cur = cur.next.get(c);
         }
-        root = add(root, key, 0);
-    }
-
-    private Node add(Node x, String key, int d) {
-        if (x == null) {
-            x = new Node();
-        }
-        if (d == key.length()) {
-            if (!x.isString) {
-                n += 1;
-            }
-            x.isString = true;
-        } else {
-            char c = key.charAt(d);
-            x.next.put(c, add(x.next.get(c), key, d + 1));
-        }
-        return x;
+        cur.isString = true;
     }
 
     /**
@@ -103,7 +90,13 @@ public class TrieST {
      * @param prefix the prefix
      */
     public boolean hasPrefix(String prefix) {
-        Node x = get(root, prefix, 0);
-        return x != null;
+        Node cur = root;
+        for (char c : prefix.toCharArray()) {
+            cur = cur.next.get(c);
+            if (cur == null) {
+                return false;
+            }
+        }
+        return true;
     }
 }
