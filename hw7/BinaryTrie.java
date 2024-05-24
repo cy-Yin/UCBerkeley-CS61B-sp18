@@ -48,7 +48,7 @@ public class BinaryTrie implements Serializable {
         root = pq.poll();
     }
 
-    private class BinaryTrieNode implements Serializable{
+    private class BinaryTrieNode implements Serializable {
         int frequency;
         Character character;
         BinaryTrieNode left;
